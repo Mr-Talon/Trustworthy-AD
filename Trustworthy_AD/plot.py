@@ -15,9 +15,9 @@ sns.set(font='SimSun', style='white', )  # 解决Seaborn中文显示问题
 def get_arg_parser(i):
     parser = argparse.ArgumentParser()
     parser.add_argument('--reference', '-r', default='C:/Users/16046/Desktop/Programming/python/深度学习/证据深度学习/'
-                                                     'Trustworthy_AD/Trustworthy_AD/folds/fold' + str(i) + '_test.csv')
+                                                     'Trustworthy_AD/Trustworthy_AD//folds/fold' + str(i) + '_test.csv')
     parser.add_argument('--prediction', '-p', default='C:/Users/16046/Desktop/Programming/python/深度学习/证据深度学习/'
-                                                      'Trustworthy_AD/Trustworthy_AD/output/Ours/prediction-CU-测试'
+                                                      'Trustworthy_AD/Trustworthy_AD/output/Ours/prediction-ECE40%-测试'
                                                       + str(i) + '.csv')
     parser.add_argument('--EDL', action='store_true', default=True)  # 是否使用不确定性预测
     return parser
@@ -32,9 +32,9 @@ def BCA_mAUC_uncertainty_threshold(i, step):
     args = get_arg_parser(i).parse_args()
     mAUC_list = []
     BCA_list = []
-    x = np.linspace(0.15, 1, step + 1)
+    x = np.linspace(0.2, 1, step + 1)
 
-    for j in np.linspace(0.15, 1, step + 1):
+    for j in np.linspace(0.2, 1, step + 1):
         result = eval_submission(misc.read_csv(args.reference), misc.read_csv(args.prediction), args.EDL, draw=False,
                                  total_epoch=300, uncertainty_threshold=j)
         mAUC_list.append(result['mAUC'])
@@ -44,7 +44,7 @@ def BCA_mAUC_uncertainty_threshold(i, step):
     BCA_list = np.array(BCA_list)
 
     # 绘制曲线mAUC
-    fig1 = plt.figure(figsize=(6,6))
+    fig1 = plt.figure(figsize=(8, 8))
     ax1 = fig1.add_subplot(111)
     # ax1.set_title('', fontproperties='SimHei', fontsize=20)
     ax1.set_xlim([0.1, 1.05])
@@ -53,13 +53,13 @@ def BCA_mAUC_uncertainty_threshold(i, step):
     ax1.set_ylabel(u'mAUC', fontsize='35')
     ax1.set_xlabel(u'不确定性拒识阈值', fontsize='35')
     plt.grid()
-    plt.legend(loc='upper right',fontsize=35)
-    plt.xticks(fontsize=30)
-    plt.yticks(fontsize=30)
+    plt.legend(loc='upper right', fontsize=35)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     plt.show()
 
     # 绘制BCA曲线
-    fig2 = plt.figure(figsize=(6, 6))
+    fig2 = plt.figure(figsize=(8, 8))
     ax1 = fig2.add_subplot(111)
     # ax1.set_title('', fontproperties='SimHei', fontsize=20)
     ax1.set_xlim([0.1, 1.05])
@@ -69,43 +69,8 @@ def BCA_mAUC_uncertainty_threshold(i, step):
     ax1.set_xlabel(u'不确定性拒识阈值', fontsize='35')
     plt.grid()
     plt.legend(loc='upper right', fontsize=35)
-    plt.xticks(fontsize=30)
-    plt.yticks(fontsize=30)
-    plt.show()
-
-    return
-
-
-def mAUC_BCA_plot():
-    '''
-    绘制不同模型的mAUC_BCA柱状图
-    '''
-    # mAUC
-    x = ['MiniRNN', 'GRU', 'LSTM', 'LSS', 'SVM', 'Ours']
-    error_params = dict(elinewidth=4, ecolor='k', capsize=5)  # 误差样式
-    color = ['#6DD5FA', '#ee9ca7', '#38ef7d', '#f7b733', '#6A82FB','#74ebd5']  # 颜色
-
-    mAUC = [0.943, 0.927, 0.925, 0.926, 0.929, 0.943]
-    std = [0.014, 0.014, 0.019, 0.025, 0.013, 0.017]  # 方差
-    fig1 = plt.figure(figsize=(11, 11))
-    ax1 = fig1.add_subplot(111)
-    ax1.set_ylim([0.85, 0.97])
-    ax1.bar(x, mAUC, color=color, linewidth=1, yerr=std, error_kw=error_params)
-    ax1.set_ylabel(u'诊断mAUC', fontsize='37')
-    plt.xticks(fontsize=35)
-    plt.yticks(fontsize=35)
-    plt.show()
-
-    # BCA
-    BCA = [0.884, 0.874, 0.866, 0.861,0.841,0.88]
-    std = [0.023, 0.015, 0.025, 0.029,0.023,0.022]
-    fig1 = plt.figure(figsize=(11, 11))
-    ax1 = fig1.add_subplot(111)
-    ax1.set_ylim([0.8, 0.93])
-    ax1.bar(x, BCA, color=color, linewidth=1, yerr=std, error_kw=error_params)
-    ax1.set_ylabel(u'诊断BCA', fontsize='37')
-    plt.xticks(fontsize=35)
-    plt.yticks(fontsize=35)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     plt.show()
 
     return
@@ -144,7 +109,7 @@ def cls_confidence_acc_EDL():
                 CN_true.append(t_diag[j])
                 CN_pred.append(p_diag[j])
                 CN_u.append(uncertainty[j])
-                CN_confi.append(1-uncertainty[j])
+                CN_confi.append(1 - uncertainty[j])
             elif t_diag[j] == 1:
                 MCI_true.append(t_diag[j])
                 MCI_pred.append(p_diag[j])
@@ -172,11 +137,11 @@ def cls_confidence_acc_EDL():
     AD_u = np.array(AD_u)
     AD_confi = np.array(AD_confi)
 
-    error = 1-np.array(pred==true).sum()/len(true)
-    acc = np.array(pred==true).sum()/len(true)
+    error = 1 - np.array(pred == true).sum() / len(true)
+    acc = np.array(pred == true).sum() / len(true)
     mean_ErrU = np.mean(u[pred != true])
     mean_RightU = np.mean(u[pred == true])
-    print("总错误率:",error,"   错误不确定性：",mean_ErrU,"    总精度：",acc," 正确不确定性：",mean_RightU)
+    print("总错误率:", error, "   错误不确定性：", mean_ErrU, "    总精度：", acc, " 正确不确定性：", mean_RightU)
 
     CN_acc = np.array(CN_pred == CN_true).sum() / len(CN_true)
     CN_meanConfi = np.mean(CN_confi[CN_pred != CN_true])
@@ -201,45 +166,45 @@ def cls_confidence_acc_EDL():
 
     # 画图
     x = ['CN', 'MCI', 'AD']
-    fig, ax1 = plt.subplots(figsize=(6, 6))
-    ax1.set_title('本文方法', fontproperties='SimSun', fontsize=35)
-    ax1.set_ylim([0, 0.3])
-    ax1.bar(x, [CN_error, MCI_error, AD_error], color='k', linewidth=1, label=u'错误率', alpha=0.3)
-    ax1.set_ylabel(u'错误率', fontsize='35')
-    plt.xticks(fontsize=35)
-    plt.yticks(fontsize=20)
-
-    ax3 = ax1.twinx()  # 组合图
-    ax3.set_ylim([0, 0.7])
-    ax3.plot(x, [CN_meanU, MCI_meanU, AD_meanU], 'k', ms=15, lw=5, marker='o', label=u'平均不确定性')
-    ax3.plot(x, [CN_meanErrU, MCI_meanErrU, AD_meanErrU], 'k', ms=15, lw=5, marker='o', label=u'错误平均不确定性')
-    ax3.plot(x, [CN_meanRightU, MCI_meanRightU, AD_meanRightU], 'k', ms=15, lw=5, marker='^', label=u'正确平均不确定性')
-    ax3.set_ylabel(u'平均不确定性', fontsize='35', rotation=90)
-
-    plt.grid()
-    fig.legend(loc='upper left', bbox_to_anchor=(0, 1), bbox_transform=ax1.transAxes, fontsize='30')
-    plt.xticks(fontsize=35)
-    plt.yticks(fontsize=20)
-    plt.show()
-
     # fig, ax1 = plt.subplots(figsize=(6, 6))
     # ax1.set_title('本文方法', fontproperties='SimSun', fontsize=35)
-    # ax1.set_ylim([0.7, 1])
-    # ax1.bar(x, [CN_acc, MCI_acc, AD_acc], color='k', linewidth=1, label=u'精度', alpha=0.3)
-    # ax1.set_ylabel(u'精度', fontsize='35')
+    # ax1.set_ylim([0, 0.3])
+    # ax1.bar(x, [CN_error, MCI_error, AD_error], color='k', linewidth=1, label=u'错误率', alpha=0.3)
+    # ax1.set_ylabel(u'错误率', fontsize='35')
     # plt.xticks(fontsize=35)
     # plt.yticks(fontsize=20)
     #
     # ax3 = ax1.twinx()  # 组合图
-    # ax3.set_ylim([0.35, 0.85])
-    # ax3.plot(x, [CN_meanConfi, MCI_meanConfi, AD_meanConfi], 'k', ms=15, lw=5, marker='o', label=u'可靠性')
-    # ax3.set_ylabel(u'可靠性', fontsize='35', rotation=90)
+    # ax3.set_ylim([0, 0.7])
+    # ax3.plot(x, [CN_meanU, MCI_meanU, AD_meanU], 'k', ms=15, lw=5, marker='o', label=u'平均不确定性')
+    # ax3.plot(x, [CN_meanErrU, MCI_meanErrU, AD_meanErrU], 'k', ms=15, lw=5, marker='o', label=u'错误平均不确定性')
+    # ax3.plot(x, [CN_meanRightU, MCI_meanRightU, AD_meanRightU], 'k', ms=15, lw=5, marker='^', label=u'正确平均不确定性')
+    # ax3.set_ylabel(u'平均不确定性', fontsize='35', rotation=90)
     #
     # plt.grid()
     # fig.legend(loc='upper left', bbox_to_anchor=(0, 1), bbox_transform=ax1.transAxes, fontsize='30')
     # plt.xticks(fontsize=35)
     # plt.yticks(fontsize=20)
     # plt.show()
+
+    fig, ax1 = plt.subplots(figsize=(6, 6))
+    ax1.set_title('本文方法', fontproperties='SimSun', fontsize=35)
+    ax1.set_ylim([0.7, 1])
+    ax1.bar(x, [CN_acc, MCI_acc, AD_acc], color='k', linewidth=1, label=u'精度', alpha=0.3)
+    ax1.set_ylabel(u'精度', fontsize='35')
+    plt.xticks(fontsize=35)
+    plt.yticks(fontsize=20)
+
+    ax3 = ax1.twinx()  # 组合图
+    ax3.set_ylim([0.35, 0.85])
+    ax3.plot(x, [CN_meanConfi, MCI_meanConfi, AD_meanConfi], 'k', ms=15, lw=5, marker='o', label=u'可靠性')
+    ax3.set_ylabel(u'可靠性', fontsize='35', rotation=90)
+
+    plt.grid()
+    fig.legend(loc='upper left', bbox_to_anchor=(0, 1), bbox_transform=ax1.transAxes, fontsize='30')
+    plt.xticks(fontsize=35)
+    plt.yticks(fontsize=20)
+    plt.show()
     return
 
 
@@ -261,7 +226,7 @@ def cls_confidence_acc():
         _, p_diag, _, _, t_diag, _, _, prob, _ = \
             parse_data(misc.read_csv(args.reference), misc.read_csv(args.prediction), False, uncertainty_threshold=1)
         t_diag = t_diag.astype(int)
-        prob=prob.max(1)        # 取最大的
+        prob = prob.max(1)  # 取最大的
 
         for j in range(len(t_diag)):
             if t_diag[j] == 0:
@@ -310,7 +275,7 @@ def cls_confidence_acc():
 
     ax3 = ax1.twinx()  # 组合图
     ax3.set_ylim([0.7, 1])
-    ax3.plot(x, [CN_meanConfi, MCI_meanConfi, AD_meanConfi], 'k', ms=15, lw=5, marker='^',label=u'可靠性')
+    ax3.plot(x, [CN_meanConfi, MCI_meanConfi, AD_meanConfi], 'k', ms=15, lw=5, marker='^', label=u'可靠性')
     ax3.set_ylabel(u'可靠性', fontsize='35', rotation=90)
     # ax3.plot(x, [CN_meanErr1U, MCI_meanErr1U, AD_meanErr1U], 'r', ms=10, lw=3, marker='^', label=u'1# error uncertainty')
 
@@ -325,7 +290,44 @@ def cls_confidence_acc():
     return
 
 
-# BCA_mAUC_uncertainty_threshold(1, 17)
+def AVUC():
+    '''
+    测试集所有样本 每个类别的 平均错误率 不确定性 错误不确定性
+    '''
+    pred = []
+    true = []
+    u = []
+    nac = 0
+    nau = 0
+    nic = 0
+    niu = 0
+    throu = 0.5
+    for i in range(20):
+        args = get_arg_parser(i).parse_args()
+        _, p_diag, _, _, t_diag, _, _, _, uncertainty, _ = \
+            parse_data(misc.read_csv(args.reference), misc.read_csv(args.prediction), True, uncertainty_threshold=1)
+        t_diag = t_diag.astype(int)
+        for p, t, unc in zip(p_diag, t_diag, uncertainty):
+            pred.append(p)
+            true.append(t)
+            u.append(unc)
+            if p == t:
+                if unc > throu:
+                    nau += 1
+                else:
+                    nac += 1
+            else:
+                if unc > throu:
+                    niu += 1
+                else:
+                    nic += 1
+
+    print((nac + niu) / (nic + niu + nac + nau))
+    return
+
+
+# BCA_mAUC_uncertainty_threshold(0, 16)
 # mAUC_BCA_plot()
-cls_confidence_acc_EDL()
+# cls_confidence_acc_EDL()
 # cls_confidence_acc()
+AVUC()
